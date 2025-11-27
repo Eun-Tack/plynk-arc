@@ -62,7 +62,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 overflow-x-hidden">
       {/* Welcome Section */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -222,7 +222,7 @@ export default async function DashboardPage() {
                 {recentResources.map((resource) => (
                   <div
                     key={resource.id}
-                    className="p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    className="p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors min-w-0"
                   >
                     <p className="font-medium text-gray-900 dark:text-white truncate">
                       {resource.title}

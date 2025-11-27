@@ -15,8 +15,8 @@ export default function AppLayout({
       <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="md:ml-64 min-h-[calc(100vh-4rem)] pb-20 md:pb-0">
-        <div className="p-4 md:p-6 lg:p-8">
+      <main className="md:ml-64 min-h-[calc(100vh-4rem)] pb-20 md:pb-0 overflow-x-hidden">
+        <div className="p-4 md:p-6 lg:p-8 max-w-full">
           {children}
         </div>
       </main>
