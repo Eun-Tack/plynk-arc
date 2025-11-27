@@ -1,0 +1,287 @@
+📋 필요한 외부 서비스 (5개)
+1️⃣ Supabase (필수) ⭐⭐⭐
+가입: https://supabase.com
+무료: 500MB DB, 1GB Storage
+해야 할 일:
+bash1. 계정 생성
+2. New Project 클릭
+3. 프로젝트 이름: "plynk-arc"
+4. Database Password 설정
+5. Region: Northeast Asia (Seoul)
+6. 생성 완료 (2분 소요)
+
+7. Project Settings → API
+   → Copy "Project URL"
+   → Copy "anon public"
+   → Copy "service_role secret"
+```
+
+**Claude Code에게 제공**:
+```
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGc...
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGc...
+
+2️⃣ Google AI Studio (Gemini) (필수) ⭐⭐⭐
+가입: https://aistudio.google.com
+무료: 1M tokens/분 (충분함)
+해야 할 일:
+bash1. Google 계정으로 로그인
+2. "Get API Key" 클릭
+3. "Create API Key" 클릭
+4. API Key 복사
+```
+
+**Claude Code에게 제공**:
+```
+GEMINI_API_KEY=AIzaSyC...
+주의사항:
+
+API 키는 절대 GitHub에 커밋하지 말 것
+.env.local 파일은 .gitignore에 포함
+
+
+3️⃣ Resend (이메일 발송) ⭐⭐
+가입: https://resend.com
+무료: 100 emails/일
+해야 할 일:
+bash1. 계정 생성
+2. Dashboard → API Keys
+3. "Create API Key" 클릭
+4. Name: "plynk-arc"
+5. Permission: "Full Access"
+6. API Key 복사
+
+7. Domain 설정 (나중에):
+   - Domains → Add Domain
+   - plynkarc.com 입력
+   - DNS 레코드 추가
+```
+
+**Claude Code에게 제공**:
+```
+RESEND_API_KEY=re_123abc...
+RESEND_FROM_EMAIL=daily@plynkarc.com
+```
+
+**초기 테스트**:
+```
+# 도메인 설정 전에는 Resend 기본 도메인 사용
+RESEND_FROM_EMAIL=onboarding@resend.dev
+
+4️⃣ Jina AI Reader (웹 스크래핑) ⭐
+가입: https://jina.ai
+무료: 관대한 무료 tier
+해야 할 일:
+bash1. 계정 생성 (선택사항)
+2. API Key 발급 (선택사항)
+
+⚠️ 참고: API Key 없이도 작동!
+https://r.jina.ai/[URL] 형태로 사용 가능
+```
+
+**Claude Code에게 제공** (선택):
+```
+JINA_API_KEY=jina_xxx...  # 선택사항
+코드 예시:
+typescript// API Key 없이
+const response = await fetch(`https://r.jina.ai/${url}`);
+
+// API Key 있으면 (Rate Limit 완화)
+const response = await fetch(`https://r.jina.ai/${url}`, {
+  headers: { 'Authorization': `Bearer ${JINA_API_KEY}` }
+});
+
+5️⃣ Vercel (배포) ⭐⭐
+가입: https://vercel.com
+무료: 100GB bandwidth/월
+해야 할 일:
+bashWeek 8에 배포할 때:
+
+1. GitHub 연동
+2. Import Repository
+3. 환경 변수 입력
+4. Deploy 클릭
+```
+
+**지금은 안 해도 됨!**
+
+---
+
+## 🔄 개발 흐름
+
+### Week 1: Supabase + Gemini 설정
+```
+1. Steve님이 Supabase 가입 → API 키 받음
+2. Steve님이 Gemini API 키 받음
+3. .env.local에 입력
+4. Claude Code에게:
+   "API 키 받았어! 이제 Supabase 연동 시작해줘"
+```
+
+### Week 3: Auth 테스트
+```
+1. Claude Code가 Auth 코드 작성
+2. npm run dev 실행
+3. localhost:3000 접속
+4. 회원가입 시도
+5. 작동하면 ✅
+```
+
+### Week 4: Gemini 통합
+```
+1. Claude Code가 AI 요약 코드 작성
+2. URL 저장 테스트
+3. Gemini가 요약 생성하는지 확인
+4. 작동하면 ✅
+```
+
+### Week 5: Resend 설정
+```
+1. Steve님이 Resend 가입 → API 키 받음
+2. .env.local에 추가
+3. Claude Code에게:
+   "Resend API 키 받았어! Daily 요약 이메일 구현해줘"
+4. 테스트 이메일 발송
+
+📝 .env.local 전체 예시
+Week 1 (최소):
+bash# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://abcdefgh.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+# Gemini
+GEMINI_API_KEY=AIzaSyC_abc123...
+
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_NAME=plynk arc
+Week 5 (완전):
+bash# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://abcdefgh.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+# Gemini
+GEMINI_API_KEY=AIzaSyC_abc123...
+
+# Jina (선택)
+JINA_API_KEY=jina_xyz789...
+
+# Resend
+RESEND_API_KEY=re_abc123...
+RESEND_FROM_EMAIL=daily@plynkarc.com
+
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_NAME=plynk arc
+```
+
+---
+
+## 🎯 Claude Code 안내 예상 시나리오
+
+### Week 1 시작 시:
+```
+Claude Code: 
+"Supabase와 Gemini API가 필요합니다.
+
+1. Supabase 가입: https://supabase.com
+   → Project URL, anon key, service_role key를 받으세요
+
+2. Gemini API: https://aistudio.google.com
+   → API Key를 받으세요
+
+3. .env.local 파일에 입력하고 알려주세요!"
+```
+
+### Steve님:
+```
+"API 키 받았어!
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+GEMINI_API_KEY=AIza..."
+```
+
+### Claude Code:
+```
+"좋습니다! 이제 Supabase 연동 코드를 작성하겠습니다."
+[코드 작성 시작]
+
+⚠️ 주의사항
+1. API 키 보안
+bash# .gitignore에 반드시 추가!
+.env.local
+.env*.local
+
+# GitHub에 절대 커밋하지 말 것!
+```
+
+### 2. 무료 Tier 한도
+```
+Supabase:  500MB DB, 1GB Storage
+           → 100 유저까지 충분
+
+Gemini:    1M tokens/분
+           → 거의 무제한
+
+Resend:    100 emails/일
+           → 100 유저면 충분
+
+Jina:      API Key 없어도 작동
+```
+
+### 3. 한도 초과 시
+```
+Claude Code가 경고:
+"Supabase 무료 한도(500MB)를 90% 사용 중입니다.
+Pro 플랜($25/월) 업그레이드를 고려하세요."
+```
+
+---
+
+## 📋 체크리스트
+
+### Week 1 시작 전
+- [ ] Supabase 계정 생성
+- [ ] Supabase 프로젝트 생성
+- [ ] Supabase API 키 3개 복사
+- [ ] Gemini API 키 발급
+- [ ] .env.local 파일 생성
+- [ ] API 키 입력
+
+### Week 5 시작 전
+- [ ] Resend 계정 생성
+- [ ] Resend API 키 발급
+- [ ] .env.local에 추가
+
+### Week 8 배포 시
+- [ ] Vercel 계정 생성
+- [ ] Vercel에 환경 변수 입력
+- [ ] 도메인 연결
+
+---
+
+## 🎉 정리
+
+### Claude Code가 하는 것:
+- ✅ 코드 작성
+- ✅ API 호출 로직
+- ✅ 에러 처리
+- ✅ 테스트 코드
+- ✅ "API 키가 필요해요!" 안내
+
+### Steve님이 하는 것:
+- ⚠️ 서비스 가입
+- ⚠️ API 키 발급
+- ⚠️ .env.local 입력
+- ⚠️ "API 키 받았어!" 알림
+
+### 소요 시간:
+```
+Supabase 설정:  10분
+Gemini API:     5분
+Resend 설정:    10분
+━━━━━━━━━━━━━━━━━━━━
+Total:          25분

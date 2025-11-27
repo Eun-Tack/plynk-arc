@@ -1,0 +1,43 @@
+{
+  "name": "plynk arc",
+  "short_name": "plynk arc",
+  "description": "AI 기반 자동 정리 지식 관리 도구 - Draw Your Arcs",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3B82F6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "lang": "ko",
+  "share_target": {
+    "action": "/share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "shortcuts": [
+    {
+      "name": "새 Arc 만들기",
+      "short_name": "새 Arc",
+      "description": "새로운 Arc를 만듭니다",
+      "url": "/arcs/new"
+    },
+    {
+      "name": "검색",
+      "short_name": "검색",
+      "description": "자료 검색",
+      "url": "/search"
+    }
+  ]
+}
