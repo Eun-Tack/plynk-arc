@@ -19,7 +19,9 @@
       "Bash(git init:*)",
       "Bash(git remote add:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: plynk arc - AI-powered knowledge management\n\nFeatures:\n- Arc-based resource organization\n- AI-powered content analysis (Gemini)\n- TF-IDF insight scoring\n- Storyline-based synthesis\n- Daily summary scheduler (Vercel Cron)\n- Chrome extension for URL capture\n- Supabase authentication & database\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: plynk arc - AI-powered knowledge management\n\nFeatures:\n- Arc-based resource organization\n- AI-powered content analysis (Gemini)\n- TF-IDF insight scoring\n- Storyline-based synthesis\n- Daily summary scheduler (Vercel Cron)\n- Chrome extension for URL capture\n- Supabase authentication & database\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

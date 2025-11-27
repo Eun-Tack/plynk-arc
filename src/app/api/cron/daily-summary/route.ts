@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { generateSynthesis } from '@/lib/gemini'
 import { calculateInsightScore, canSynthesize } from '@/lib/insight-score'
+import { sendEmail, generateDailySummaryEmail } from '@/lib/email'
 
 // Vercel Cron에서 호출되는 Daily Summary 생성 API
 // vercel.json에서 cron 설정 필요:
@@ -151,14 +152,47 @@ export async function GET(request: NextRequest) {
         continue
       }
 
-      // TODO: 이메일 발송 로직 추가
-      // 실제 이메일 발송은 Resend, SendGrid 등의 서비스 필요
+      // 이메일 발송
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://plynk-arc.vercel.app'
+      const viewUrl = `${baseUrl}/insights`
+
+      // 사용자 이름 조회
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single()
+
+      const emailHtml = generateDailySummaryEmail({
+        userName: profile?.full_name || '사용자',
+        title: synthesis.title,
+        storyline: synthesis.storyline,
+        connections: synthesis.connections,
+        actionItems: synthesis.actionItems,
+        resourceCount: resources.length,
+        viewUrl,
+      })
+
+      const emailResult = await sendEmail({
+        to: user.email,
+        subject: `[plynk arc] ${synthesis.title}`,
+        html: emailHtml,
+      })
+
+      // 이메일 발송 상태 업데이트
+      if (emailResult.success) {
+        await supabase
+          .from('daily_summaries')
+          .update({ status: 'sent', sent_at: new Date().toISOString() })
+          .eq('id', savedSummary.id)
+      }
 
       results.push({
         userId: user.id,
         status: 'success',
         summaryId: savedSummary.id,
         resourceCount: resources.length,
+        emailSent: emailResult.success,
       })
     } catch (error) {
       console.error(`Error processing user ${user.id}:`, error)
