@@ -44,4 +44,6 @@ next-env.d.ts
 
 # Windows reserved names
 nul
-*.json
+
+# Sensitive files
+client_secret*.json
