@@ -60,7 +60,7 @@ export function ArcForm({ arc, mode }: ArcFormProps) {
       }
 
       if (result.success) {
-        router.push(mode === 'create' ? `/arcs/${result.arc.id}` : `/arcs/${arc!.id}`)
+        router.push('/dashboard')
         router.refresh()
       }
     } catch (e) {
