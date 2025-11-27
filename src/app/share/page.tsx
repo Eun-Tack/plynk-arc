@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/Card'
-import { Loader2, Check, X, ChevronDown } from 'lucide-react'
+import { Loader2, X, ChevronDown } from 'lucide-react'
 
 interface Arc {
   id: string
@@ -20,9 +20,7 @@ function SharePageContent() {
   const [selectedArcId, setSelectedArcId] = useState<string>('')
   const [customTitle, setCustomTitle] = useState('')
   const [isLoading, setIsLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
   const [showArcDropdown, setShowArcDropdown] = useState(false)
 
   // Get shared URL from query params
@@ -64,36 +62,30 @@ function SharePageContent() {
   async function handleSave() {
     if (!selectedArcId || !sharedUrl) return
 
-    setIsSaving(true)
-    setError(null)
+    // 즉시 창 닫기/돌아가기 (백그라운드에서 저장)
+    const saveData = {
+      arcId: selectedArcId,
+      url: sharedUrl,
+      customTitle: customTitle.trim() || undefined,
+    }
 
-    try {
-      const response = await fetch('/api/resources', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          arcId: selectedArcId,
-          url: sharedUrl,
-          customTitle: customTitle.trim() || undefined,
-        }),
-      })
+    // 백그라운드에서 저장 요청 (응답 기다리지 않음)
+    fetch('/api/resources', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(saveData),
+      keepalive: true, // 페이지 닫혀도 요청 유지
+    }).catch(console.error)
 
-      const data = await response.json()
+    // 즉시 창 닫기
+    window.close()
 
-      if (!response.ok) {
-        throw new Error(data.error || '저장에 실패했습니다.')
-      }
-
-      setSuccess(true)
-      setTimeout(() => {
-        window.close()
-        // If window.close() doesn't work (not opened by script), redirect
-        router.push(`/arcs/${selectedArcId}`)
-      }, 1500)
-    } catch (err: any) {
-      setError(err.message || '저장에 실패했습니다.')
-    } finally {
-      setIsSaving(false)
+    // window.close()가 작동하지 않는 경우 (PWA에서 직접 열린 경우)
+    // history.back()으로 이전 페이지로 돌아가기 시도
+    if (window.history.length > 1) {
+      window.history.back()
+    } else {
+      router.push('/dashboard')
     }
   }
 
@@ -108,26 +100,6 @@ function SharePageContent() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
-      </div>
-    )
-  }
-
-  if (success) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
-        <Card className="max-w-md w-full">
-          <CardContent className="p-8 text-center">
-            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Check className="w-8 h-8 text-green-600 dark:text-green-400" />
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              저장 완료!
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              리소스가 Arc에 저장되었습니다.
-            </p>
-          </CardContent>
-        </Card>
       </div>
     )
   }
@@ -241,16 +213,9 @@ function SharePageContent() {
             <Button
               className="flex-1"
               onClick={handleSave}
-              disabled={isSaving || !selectedArcId || !sharedUrl}
+              disabled={!selectedArcId || !sharedUrl}
             >
-              {isSaving ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  저장 중...
-                </>
-              ) : (
-                '저장하기'
-              )}
+              저장하기
             </Button>
           </div>
         </CardContent>
