@@ -92,26 +92,20 @@ export function DailySummarySettings({ initialSettings }: DailySummarySettingsPr
             <p className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
               <Clock className="w-4 h-4" />
               발송 시간
+              <span className="text-xs text-amber-600 dark:text-amber-400 font-normal">
+                (현재 비활성 - 매일 오전 9시 고정)
+              </span>
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              요약 이메일을 받을 시간을 선택하세요
+              요약은 매일 오전 9시(KST)에 발송됩니다
             </p>
           </div>
           <select
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            disabled={!enabled}
+            value="09:00"
+            disabled={true}
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <option value="06:00">오전 6:00</option>
-            <option value="07:00">오전 7:00</option>
-            <option value="08:00">오전 8:00</option>
             <option value="09:00">오전 9:00</option>
-            <option value="10:00">오전 10:00</option>
-            <option value="12:00">오후 12:00</option>
-            <option value="18:00">오후 6:00</option>
-            <option value="20:00">오후 8:00</option>
-            <option value="21:00">오후 9:00</option>
           </select>
         </div>
 
