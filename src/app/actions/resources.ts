@@ -389,6 +389,116 @@ export async function deleteResource(resourceId: string) {
   return { success: true }
 }
 
+// 리소스 수정
+export async function updateResource(
+  resourceId: string,
+  data: {
+    title?: string
+    summary?: string
+    tags?: string[]
+  }
+) {
+  const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return { error: '로그인이 필요합니다.' }
+  }
+
+  // 리소스 확인 및 권한 체크
+  const { data: resource } = await supabase
+    .from('resources')
+    .select('id, arc_id, user_id')
+    .eq('id', resourceId)
+    .single()
+
+  if (!resource) {
+    return { error: '리소스를 찾을 수 없습니다.' }
+  }
+
+  if (resource.user_id !== user.id) {
+    return { error: '수정 권한이 없습니다.' }
+  }
+
+  try {
+    // 리소스 기본 정보 업데이트
+    const updateData: Record<string, any> = {}
+    if (data.title !== undefined) updateData.title = data.title
+    if (data.summary !== undefined) updateData.summary = data.summary
+
+    if (Object.keys(updateData).length > 0) {
+      const { error: updateError } = await supabase
+        .from('resources')
+        .update(updateData)
+        .eq('id', resourceId)
+
+      if (updateError) {
+        console.error('Resource update error:', updateError)
+        return { error: '리소스 수정에 실패했습니다.' }
+      }
+    }
+
+    // 태그 업데이트
+    if (data.tags !== undefined) {
+      // 기존 태그 연결 삭제
+      await supabase
+        .from('resource_tags')
+        .delete()
+        .eq('resource_id', resourceId)
+
+      // 새 태그 연결
+      for (const tagName of data.tags) {
+        // 기존 태그 찾기 또는 생성
+        let { data: existingTag } = await supabase
+          .from('tags')
+          .select('id, usage_count')
+          .eq('user_id', user.id)
+          .eq('name', tagName)
+          .single()
+
+        let tagId: string
+
+        if (existingTag) {
+          tagId = existingTag.id
+        } else {
+          // 새 태그 생성
+          const { data: newTag, error: tagError } = await supabase
+            .from('tags')
+            .insert({
+              user_id: user.id,
+              name: tagName,
+              usage_count: 1,
+            })
+            .select()
+            .single()
+
+          if (tagError) {
+            console.error('Tag creation error:', tagError)
+            continue
+          }
+          tagId = newTag.id
+        }
+
+        // 리소스-태그 연결
+        await supabase
+          .from('resource_tags')
+          .insert({
+            resource_id: resourceId,
+            tag_id: tagId,
+          })
+      }
+    }
+
+    revalidatePath(`/arcs/${resource.arc_id}`)
+    revalidatePath('/dashboard')
+
+    return { success: true }
+  } catch (error) {
+    console.error('Resource update error:', error)
+    return { error: '리소스 수정 중 오류가 발생했습니다.' }
+  }
+}
+
 export async function getResource(resourceId: string) {
   const supabase = await createClient()
 

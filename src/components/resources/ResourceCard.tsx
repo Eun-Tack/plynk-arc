@@ -11,13 +11,11 @@ import {
   Trash2,
   Copy,
   Check,
-  Video,
-  Wrench,
-  BookOpen,
-  Newspaper
+  Pencil
 } from 'lucide-react'
 import { deleteResource } from '@/app/actions/resources'
 import { useRouter } from 'next/navigation'
+import { ResourceEditModal } from './ResourceEditModal'
 
 interface Tag {
   id: string
@@ -61,6 +59,7 @@ export function ResourceCard({ resource, isOwner }: ResourceCardProps) {
   const [showMenu, setShowMenu] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   // 태그 추출
@@ -229,6 +228,16 @@ export function ResourceCard({ resource, isOwner }: ResourceCardProps) {
 
               {showMenu && (
                 <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-10">
+                  <button
+                    onClick={() => {
+                      setShowMenu(false)
+                      setShowEditModal(true)
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    <Pencil className="w-4 h-4" />
+                    수정
+                  </button>
                   {resource.url && (
                     <button
                       onClick={handleCopyUrl}
@@ -261,6 +270,15 @@ export function ResourceCard({ resource, isOwner }: ResourceCardProps) {
           )}
         </div>
       </CardContent>
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <ResourceEditModal
+          resource={resource}
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+        />
+      )}
     </Card>
   )
 }
