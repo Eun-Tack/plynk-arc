@@ -267,9 +267,10 @@ export default async function DashboardPage() {
             </div>
             <Button
               variant="secondary"
-              className="bg-white text-primary-500 hover:bg-gray-100 border-none"
+              className="bg-white/50 text-white cursor-not-allowed border-none"
+              disabled
             >
-              설치하기
+              준비 중
             </Button>
           </div>
         </CardContent>
