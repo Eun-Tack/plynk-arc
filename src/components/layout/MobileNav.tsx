@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, FolderOpen, Plus, Search, User, X, Loader2, Link as LinkIcon } from 'lucide-react'
+import { LayoutDashboard, FolderOpen, Plus, Search, User, X, Loader2, Link as LinkIcon, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 
@@ -32,6 +32,7 @@ export function MobileNav() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showSuccess, setShowSuccess] = useState(false)
 
   // Arc 목록 로드
   useEffect(() => {
@@ -85,14 +86,19 @@ export function MobileNav() {
         throw new Error(data.error || '저장에 실패했습니다.')
       }
 
-      // 성공 시 모달 닫고 해당 Arc로 이동
+      // 성공 시 모달 닫고 토스트 표시
       setShowAddModal(false)
       setUrl('')
-      router.push(`/arcs/${selectedArcId}`)
+      setShowSuccess(true)
+
+      // 2초 후 토스트 숨김
+      setTimeout(() => {
+        setShowSuccess(false)
+      }, 2000)
+
       router.refresh()
     } catch (err: any) {
       setError(err.message || '저장에 실패했습니다.')
-    } finally {
       setIsSaving(false)
     }
   }
@@ -265,6 +271,16 @@ export function MobileNav() {
         </div>
       )}
 
+      {/* Success Toast */}
+      {showSuccess && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[70] animate-toast">
+          <div className="flex items-center gap-2 px-4 py-3 bg-green-500 text-white rounded-lg shadow-lg">
+            <Check className="w-5 h-5" />
+            <span className="font-medium">저장 완료!</span>
+          </div>
+        </div>
+      )}
+
       <style jsx>{`
         @keyframes slide-up {
           from {
@@ -276,6 +292,27 @@ export function MobileNav() {
         }
         .animate-slide-up {
           animation: slide-up 0.3s ease-out;
+        }
+        @keyframes toast {
+          0% {
+            opacity: 0;
+            transform: translate(-50%, -20px);
+          }
+          10% {
+            opacity: 1;
+            transform: translate(-50%, 0);
+          }
+          90% {
+            opacity: 1;
+            transform: translate(-50%, 0);
+          }
+          100% {
+            opacity: 0;
+            transform: translate(-50%, -20px);
+          }
+        }
+        .animate-toast {
+          animation: toast 2s ease-out forwards;
         }
       `}</style>
     </>

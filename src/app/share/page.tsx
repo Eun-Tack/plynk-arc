@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/Card'
-import { Loader2, X, ChevronDown } from 'lucide-react'
+import { Loader2, X, ChevronDown, Check } from 'lucide-react'
 
 interface Arc {
   id: string
@@ -20,8 +20,10 @@ function SharePageContent() {
   const [selectedArcId, setSelectedArcId] = useState<string>('')
   const [customTitle, setCustomTitle] = useState('')
   const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showArcDropdown, setShowArcDropdown] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
 
   // Get shared URL from query params
   const sharedUrl = searchParams.get('url') || searchParams.get('text') || ''
@@ -62,30 +64,42 @@ function SharePageContent() {
   async function handleSave() {
     if (!selectedArcId || !sharedUrl) return
 
-    // 즉시 창 닫기/돌아가기 (백그라운드에서 저장)
-    const saveData = {
-      arcId: selectedArcId,
-      url: sharedUrl,
-      customTitle: customTitle.trim() || undefined,
-    }
+    setIsSaving(true)
+    setError(null)
 
-    // 백그라운드에서 저장 요청 (응답 기다리지 않음)
-    fetch('/api/resources', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(saveData),
-      keepalive: true, // 페이지 닫혀도 요청 유지
-    }).catch(console.error)
+    try {
+      const response = await fetch('/api/resources', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          arcId: selectedArcId,
+          url: sharedUrl,
+          customTitle: customTitle.trim() || undefined,
+        }),
+      })
 
-    // 즉시 창 닫기
-    window.close()
+      const data = await response.json()
 
-    // window.close()가 작동하지 않는 경우 (PWA에서 직접 열린 경우)
-    // history.back()으로 이전 페이지로 돌아가기 시도
-    if (window.history.length > 1) {
-      window.history.back()
-    } else {
-      router.push('/dashboard')
+      if (!response.ok) {
+        throw new Error(data.error || '저장에 실패했습니다.')
+      }
+
+      // 성공 토스트 표시
+      setShowSuccess(true)
+
+      // 1.5초 후 창 닫기/돌아가기
+      setTimeout(() => {
+        window.close()
+        // window.close()가 작동하지 않는 경우
+        if (window.history.length > 1) {
+          window.history.back()
+        } else {
+          router.push('/dashboard')
+        }
+      }, 1500)
+    } catch (err: any) {
+      setError(err.message || '저장에 실패했습니다.')
+      setIsSaving(false)
     }
   }
 
@@ -207,19 +221,53 @@ function SharePageContent() {
               variant="outline"
               className="flex-1"
               onClick={handleClose}
+              disabled={isSaving}
             >
               취소
             </Button>
             <Button
               className="flex-1"
               onClick={handleSave}
-              disabled={!selectedArcId || !sharedUrl}
+              disabled={!selectedArcId || !sharedUrl || isSaving}
             >
-              저장하기
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  저장 중...
+                </>
+              ) : (
+                '저장하기'
+              )}
             </Button>
           </div>
         </CardContent>
       </Card>
+
+      {/* Success Toast */}
+      {showSuccess && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-slide-down">
+          <div className="flex items-center gap-2 px-4 py-3 bg-green-500 text-white rounded-lg shadow-lg">
+            <Check className="w-5 h-5" />
+            <span className="font-medium">저장 완료!</span>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes slide-down {
+          from {
+            opacity: 0;
+            transform: translate(-50%, -20px);
+          }
+          to {
+            opacity: 1;
+            transform: translate(-50%, 0);
+          }
+        }
+        .animate-slide-down {
+          animation: slide-down 0.3s ease-out;
+        }
+      `}</style>
     </div>
   )
 }
