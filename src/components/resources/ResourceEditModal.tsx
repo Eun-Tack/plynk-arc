@@ -45,7 +45,7 @@ export function ResourceEditModal({ resource, isOpen, onClose }: ResourceEditMod
   useEffect(() => {
     async function loadTags() {
       const result = await getUserTags()
-      if ('tags' in result) {
+      if ('tags' in result && result.tags) {
         setExistingTags(result.tags)
       }
     }
