@@ -171,22 +171,43 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-white dark:bg-gray-800 rounded-lg p-0.5 flex items-center justify-center border border-gray-200 dark:border-gray-700">
-                <Image
-                  src="/logo.png"
-                  alt="plynk arc"
-                  width={24}
-                  height={24}
-                  className="object-contain"
-                />
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Company Info - Korean */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-white dark:bg-gray-800 rounded-lg p-0.5 flex items-center justify-center border border-gray-200 dark:border-gray-700">
+                  <Image
+                    src="/logo.png"
+                    alt="plynk arc"
+                    width={24}
+                    height={24}
+                    className="object-contain"
+                  />
+                </div>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">
+                  (주)플링크데이터
+                </span>
               </div>
-              <span className="text-sm font-medium text-gray-900 dark:text-white">
-                plynk arc
-              </span>
+              <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                <p>이메일: master@plynkin.com</p>
+                <p>주소: 서울특별시 동작구 상도로55길 6, 테크스테이션 308호</p>
+              </div>
             </div>
 
+            {/* Company Info - English */}
+            <div className="space-y-4">
+              <span className="text-sm font-medium text-gray-900 dark:text-white">
+                Plynk Data Co., Ltd.
+              </span>
+              <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                <p>Email: master@plynkin.com</p>
+                <p>Address: Room 308, Tech Station, 6, Sangdoro 55-gil, Dongjak-gu, Seoul, Republic of Korea</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Links & Copyright */}
+          <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
               <Link href="/terms" className="hover:text-gray-900 dark:hover:text-white">
                 이용약관
@@ -198,9 +219,8 @@ export default function LandingPage() {
                 도움말
               </Link>
             </div>
-
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              &copy; 2025 plynk. All rights reserved.
+              &copy; 2025 Plynk. All rights reserved.
             </p>
           </div>
         </div>
